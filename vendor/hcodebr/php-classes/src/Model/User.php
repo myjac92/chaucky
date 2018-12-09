@@ -83,6 +83,7 @@ class User extends Model{
     ));
     $this->setData($results[0]);
   }
+
   public function update()
   {
     $sql = new Sql;
@@ -97,6 +98,7 @@ class User extends Model{
     ));
         $this->setData($results[0]);
   }
+
   public function delete()
   {
     $sql = new Sql;
@@ -105,7 +107,7 @@ class User extends Model{
     ));
   }
 
-
+/*
   public static function getForgot($email, $inadmin = true)
   {
        $sql = new Sql();
@@ -206,7 +208,8 @@ public function setPassword($password)
 }
 
 
+
+*/
+
 }
-
-
  ?>
