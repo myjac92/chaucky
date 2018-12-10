@@ -85,7 +85,7 @@ class Category extends Model{
                     ]);
       }
     }
-    /*
+
     public function getProducstPage($page=1,$itemPerPage =3)
     {
       $start = ($page - 1 ) * $itemPerPage;
@@ -109,7 +109,7 @@ class Category extends Model{
       ];
     }
 
-*/
+
       public function addProduct(Product $product)
       {
         $sql = new Sql();
