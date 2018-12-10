@@ -13,6 +13,18 @@ class Product extends Model{
     return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
   }
 
+  public static function checkList($list){
+
+    foreach ($list as &$row) {
+
+      $p = new Product();
+      $p->setData($row);
+      $row = $p->getValues();
+    }
+    return $list;
+
+  }
+
   public function save(){
 
     $sql = new Sql;
@@ -84,13 +96,14 @@ class Product extends Model{
 
           case "jpg":
           case "jpeg":
-          $image =  imagecreatefromjpeg($file["tmp_name"]);
-            break;
+          $image =  imagecreatefromjpeg($file['tmp_name']);
+          break;
           case "gif":
-          $image = imagecreatefromgif($file["tmp_name"]);
-            break;
+          $image = imagecreatefromgif($file['tmp_name']);
+          break;
           case "png":
-          $image = imagecreatefrompng($file["temp_name"]);
+          $image = imagecreatefrompng($file['tmp_name']);
+          break;
     }
 
     $dist =   $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .
