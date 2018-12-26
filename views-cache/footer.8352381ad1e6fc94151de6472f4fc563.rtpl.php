@@ -1,5 +1,6 @@
 <?php if(!class_exists('Rain\Tpl')){exit;}?>
 
+
     <div class="footer-top-area">
         <div class="zigzag-bottom"></div>
         <div class="container">
@@ -32,6 +33,7 @@
                         <h2 class="footer-wid-title">Categorias</h2>
                         <ul>
                           <?php require $this->checkTemplate("categories-menu");?>
+
                         </ul>
                     </div>
                 </div>

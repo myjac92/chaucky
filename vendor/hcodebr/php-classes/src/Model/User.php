@@ -13,6 +13,7 @@ class User extends Model{
   public function getFromSession(){
 
     $user = new User();
+  //  session_destroy();
       if(isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] >0){
 
       $user->setData($_SESSION[User::SESSION]);
@@ -27,7 +28,7 @@ class User extends Model{
       ||
       !$_SESSION[User::SESSION]
       ||
-      !(int)$_SESSION[User::SESSION]["iduser"]>0
+      !(int)$_SESSION[User::SESSION]['iduser']>0
     ) {
       return false;
     }else {
