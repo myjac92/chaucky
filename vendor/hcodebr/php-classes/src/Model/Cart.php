@@ -36,7 +36,7 @@ public static function getFromSession(){
             $data["iduser"] = $user->getiduser();
         }
         $cart->setData($data);
-       var_dump($cart->getValues());
+       //var_dump($cart->getValues());
        //exit;
         $cart->save();
         $cart->setToSession();
@@ -189,7 +189,7 @@ public function setFreight($nrzipcode)
 
           $xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
 
-          //echo json_encode($xml);
+        //  echo json_encode($xml);
           //exit;
           $result = $xml->Servicos->cServico;
           if ($result->MsgErro !='') {
