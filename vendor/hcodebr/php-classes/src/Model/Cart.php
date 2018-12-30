@@ -223,7 +223,7 @@ public static function formatValueToDecimal($value):float{
 
 public static function setMsgError($msg){
 
-  $_SESSION[Cart::SESSION] = $msg;
+  $_SESSION[Cart::SESSION_ERROR] = $msg;
 }
 
 public static function getMsgError(){
