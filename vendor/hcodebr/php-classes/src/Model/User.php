@@ -16,7 +16,7 @@ class User extends Model{
   public function getFromSession(){
 
     $user = new User();
-  // session_destroy();
+  //session_destroy();
       if(isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] >0){
 
       $user->setData($_SESSION[User::SESSION]);
@@ -135,7 +135,7 @@ class User extends Model{
     $sql = new Sql;
     $results = $sql->select("CALL sp_usersupdate_save(:iduser,:desperson,:deslogin,:despassword,:desemail,:nrphone,:inadmin)",array(
       ":iduser"=>$this->getiduser(),
-      ":desperson"=>utf8_decode($this->getdesperson()),
+      ":desperson"=>$this->getdesperson(),
       ":deslogin"=>$this->getdeslogin(),
     //  ":despassword"=>$this->getdespassword(),
       ":despassword"=>User::getPasswordHash($this->getdespassword()),

@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hcode Store</title>
+    <title>Chaucky Store</title>
 
     <!-- Google Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600' rel='stylesheet' type='text/css'>
@@ -49,6 +49,7 @@
                             <li><a href="/logout"><i class="fa fa-close"></i> Sair</a></li>
                             <?php }else{ ?>
 
+
                             <li><a href="/login"><i class="fa fa-lock"></i> Login</a></li>
                             <?php } ?>
 
@@ -87,8 +88,10 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="logo">
-                        <h1><a href="/"><img src="/res/site/img/logo.png"></a></h1>
+                        <h1><a href="/"><img src="/res/site/img/images.jpg"></a>ARMAZEM VR
+                        </h1>
                     </div>
+
                 </div>
 
                 <div class="col-sm-6">
@@ -115,7 +118,7 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="/">Home</a></li>
-                        <li><a href="#">Produtos</a></li>
+                        <li><a href="/">Produtos</a></li>
                         <li><a href="/cart">Carrinho</a></li>
                     </ul>
                 </div>

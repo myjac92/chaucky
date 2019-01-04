@@ -6,9 +6,12 @@ use \Hcode\Model\User;
 
 $app->get('/admin', function() {
 
-      User::verifyLogin();
+    //  User::verifyLogin();
+      $user=User::getFromSession();
       $page = new PageAdmin();
-      $page->setTpl("index");
+      $page->setTpl("index",[
+        'user'=>$user->getValues()
+      ]);
 });
 
 $app->get('/admin/login', function() {

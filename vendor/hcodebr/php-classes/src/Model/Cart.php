@@ -16,9 +16,9 @@ public static function getFromSession(){
    $cart = new Cart();
    //session_destroy();
 
-  if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] >0)
+  if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION][0]['idcart'] >0)
   {
-    $cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
+    $cart->get((int)$_SESSION[Cart::SESSION][0]['idcart']);
   }
   else
   {
