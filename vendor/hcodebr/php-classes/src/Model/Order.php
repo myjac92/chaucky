@@ -7,6 +7,7 @@ use \Hcode\Model\Cart;
 
 class Order extends Model{
 
+  const SESSION ="OrderSession";
   const SUCCESS = "Order-Success";
   const ERROR = "Order-Error";
 
@@ -147,7 +148,7 @@ public static function getPageSearch($search,$page=1,$itemPerPage = 10)
           INNER JOIN tb_users d ON d.iduser = a.iduser
           INNER JOIN tb_addresses e USING(idaddress)
           INNER JOIN tb_persons f ON f.idperson = d.idperson
-          WHERE a.idorder = :id OR f.idperson LIKE :search 
+          WHERE a.idorder = :id OR f.idperson LIKE :search
           ORDER BY a.dtregister DESC
           LIMIT $start,$itemPerPage;
           ",[
@@ -163,6 +164,17 @@ public static function getPageSearch($search,$page=1,$itemPerPage = 10)
     'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemPerPage)
   ];
 }
+
+public function toSession(){
+
+  $_SESSION[Order::SESSION] = $this->getValues();
+}
+
+ public function getFromSession(){
+
+   $this->setData($_SESSION[Order::SESSION]);
+
+ }
 
 
 
