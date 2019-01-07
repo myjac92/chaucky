@@ -51,6 +51,16 @@ public function setToSession()
 {
     $_SESSION[Cart::SESSION]=$this->getValues();
 }
+public static function removeSession()
+{
+     $_SESSION[Cart::SESSION] = NULL;
+     session_destroy();
+     //session_regenerate_id();
+}
+public static function removeToSession()
+{
+   $_SESSION[Cart::SESSION] = NULL;
+}
 
 
 public function getFromSessionID()

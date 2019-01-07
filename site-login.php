@@ -2,6 +2,7 @@
 
 use Hcode\Page;
 use Hcode\Model\User;
+use Hcode\Model\Cart;
 
 $app->get("/login", function(){
 
@@ -20,6 +21,7 @@ $app->post("/login", function(){
 	try {
 
 		User::login($_POST['login'], $_POST['password']);
+		Cart::getFromSession();
 
 	} catch(Exception $e) {
 
@@ -28,6 +30,7 @@ $app->post("/login", function(){
 	}
 
 	header("Location: /checkout");
+	//header ("Location: /");
 	exit;
 
 });
@@ -35,7 +38,9 @@ $app->post("/login", function(){
 $app->get("/logout", function(){
 
 	User::logout();
-
+	Cart::getFromSession();
+	Cart::removeToSession();
+	session_regenerate_id();
 	header("Location: /login");
 	exit;
 
@@ -101,7 +106,7 @@ $app->get("/forgot", function() {
 
 	$page = new Page();
 
-	$page->setTpl("forgot");	
+	$page->setTpl("forgot");
 
 });
 
@@ -118,7 +123,7 @@ $app->get("/forgot/sent", function(){
 
 	$page = new Page();
 
-	$page->setTpl("forgot-sent");	
+	$page->setTpl("forgot-sent");
 
 });
 
@@ -138,7 +143,7 @@ $app->get("/forgot/reset", function(){
 
 $app->post("/forgot/reset", function(){
 
-	$forgot = User::validForgotDecrypt($_POST["code"]);	
+	$forgot = User::validForgotDecrypt($_POST["code"]);
 
 	User::setFogotUsed($forgot["idrecovery"]);
 

@@ -265,3 +265,66 @@
     <option>{{quantity}}x de R${{installmentAmount}} com juros (R${{totalAmount}})</option>
 </script>
 <script src="<?php echo htmlspecialchars( $pagseguro["urlJS"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"></script>
+<script type="text/javascript">
+  PagSeguroDirectPayment.setSessionId('<?php echo htmlspecialchars( $pagseguro["id"], ENT_COMPAT, 'UTF-8', FALSE ); ?>');
+
+</script>
+
+<script>
+
+  scripts.push(function(){
+
+    function showError(error)
+    {
+      $("#alert-error span.msg").text(error);
+      $("#alert-error").removeClass("hide");
+    }
+
+    PagSeguroDirectPayment.getPaymentMethods({
+    amount: parseFloat("<?php echo htmlspecialchars( $order["vltotal"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"),
+    success: function(response) {
+      //meios de pagamento disponíveis
+    //  console.log(response);
+    var tplDebit = Handlebars.compile($("#tpl-payment-debit").html());
+    var tplCredit = Handlebars.compile($("#tpl-payment-credit").html());
+
+    $.each(response.paymentMethods.ONLINE_DEBIT.options, function(index,option){
+
+        $("#tab-debito .contents").append(tplDebit({
+            value:option.name,
+            image:option.images.MEDIUM.path,
+            text:option.displayName
+        }));
+    });
+    $.each(response.paymentMethods.CREDIT_CARD.options, function(index,option){
+
+        $("#tab-credito .contents").append(tplCredit({
+            name:option.name,
+            image:option.images.MEDIUM.path,
+
+        }));
+    });
+    $("#loading").hide();
+    $("#tabs-methods .nav-link:first").tab("show"); // preselectionner la fenetre boleto
+    $("#payment-methods").removeClass("hide");
+    },
+    error: function(response) {
+
+      var errors = [];
+      for(var code in response.errors)
+      {
+        errors.push(response.errors[code]);
+      }
+      showError(errors.toString());
+
+    //  console.log(response);
+
+    },
+    complete: function(response) {
+    //  console.log(respons
+
+    }
+  });
+  });
+
+</script>

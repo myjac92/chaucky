@@ -95,7 +95,7 @@ class User extends Model{
    }
   public static function logout()
   {
-    $_SESSION[User::SESSION] == NULL;
+    $_SESSION[User::SESSION] = NULL;
   }
 
   public static function listAll()

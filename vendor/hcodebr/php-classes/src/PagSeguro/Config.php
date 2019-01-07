@@ -38,16 +38,16 @@ public static function getAuthentication():array
 }
 public static function getUrlSessions(){
 
-  return (Config::SANDBOX===true) ? Config::SANDBOX_URL_JS:Config::PRODUCTION_URL_JS;
+  return (Config::SANDBOX===true) ? Config::SANDBOX_SESSIONS:Config::PRODUCTION_SESSIONS;
 }
 
 public static function getUrlJS(){
 
-
+    return (Config::SANDBOX===true) ? Config::SANDBOX_URL_JS:Config::PRODUCTION_URL_JS;
 }
 
-}
 
+}
 //www.chauckycommerce.com.br/payment/notification
 
  ?>
