@@ -1,3 +1,20 @@
+Skip to content
+
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ @myjac92 Sign out
+2
+5 7 hcodebr/ecommerce-pagseguro
+ Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights
+ecommerce-pagseguro/views/payment.html
+97d7b3a  on 18 Oct 2017
+@joaohcrangel joaohcrangel Pagamento Débito
+
+628 lines (467 sloc)  31.3 KB
 <style>
 .button.alt.btn:hover, .button.alt.btn:focus {
     color: #fff!important;
@@ -113,7 +130,9 @@
                                                         </div>
 
                                                         <fieldset class="form-group row">
-                                                            <div class="col-sm-10 contents"></div>
+                                                            <div class="col-sm-10 contents">
+
+                                                            </div>
                                                         </fieldset>
 
                                                         <div class="form-row place-order">
@@ -129,7 +148,7 @@
 
                                                     <form action="/payment/credit" class="checkout" method="post" name="checkout" style="padding:10px;" id="form-credit">
 
-                                                        <input type="hidden" name="brand" value="brand_field">
+                                                        <input type="hidden" name="brand" id="brand_field">
 
                                                         <div class="row">
                                                             <div class="col-sm-4">
@@ -261,101 +280,265 @@
     <img src="https://stc.pagseguro.uol.com.br/{{image}}" alt="{{name}}" style="float:left; margin-right:4px;">
 </script>
 <script id="tpl-installment-free" type="text/x-handlebars-template">
-    <option>{{quantity}}x de R${{installmentAmount}} sem juros</option>
+    <option>{{quantity}}x de {{installmentAmount}} sem juros</option>
 </script>
 <script id="tpl-installment" type="text/x-handlebars-template">
-    <option>{{quantity}}x de R${{installmentAmount}} com juros (R${{totalAmount}})</option>
+    <option>{{quantity}}x de {{installmentAmount}} com juros ({{totalAmount}})</option>
 </script>
 <script src="{$pagseguro.urlJS}"></script>
 <script type="text/javascript">
-  PagSeguroDirectPayment.setSessionId('{$pagseguro.id}');
-
+PagSeguroDirectPayment.setSessionId('{$pagseguro.id}');
 </script>
-
 <script>
-
-  scripts.push(function(){
-
+scripts.push(function(){
     function showError(error)
     {
-      $("#alert-error span.msg").text(error);
-      $("#alert-error").removeClass("hide");
+        $("#alert-error span.msg").text(error);
+        $("#alert-error").removeClass("hide");
     }
-
     PagSeguroDirectPayment.getPaymentMethods({
-    amount: parseFloat("{$order.vltotal}"),
-    success: function(response) {
-      //meios de pagamento disponíveis
-     console.log(response);
-    var tplDebit = Handlebars.compile($("#tpl-payment-debit").html());
-    var tplCredit = Handlebars.compile($("#tpl-payment-credit").html());
+        amount: parseFloat("{$order.vltotal}"),
+        success: function(response) {
 
-    $.each(response.paymentMethods.ONLINE_DEBIT.options, function(index,option){
+            var tplDebit = Handlebars.compile($("#tpl-payment-debit").html());
+            var tplCredit = Handlebars.compile($("#tpl-payment-credit").html());
+            $.each(response.paymentMethods.ONLINE_DEBIT.options, function(index, option){
+                $("#tab-debito .contents").append(tplDebit({
+                    value:option.name,
+                    image:option.images.MEDIUM.path,
+                    text:option.displayName
+                }));
+            });
+            $.each(response.paymentMethods.CREDIT_CARD.options, function(index, option){
+                $("#tab-credito .contents").append(tplCredit({
+                    name:option.name,
+                    image:option.images.MEDIUM.path
+                }));
+            });
+            $("#loading").hide();
+            $("#tabs-methods .nav-link:first").tab("show");
+            $("#payment-methods").removeClass("hide");
+        },
+        error: function(response) {
 
-        $("#tab-debito .contents").append(tplDebit({
-            value:option.name,
-            image:option.images.MEDIUM.path,
-            text:option.displayName
-        }));
+            var errors = [];
+            for (var code in response.errors)
+            {
+                errors.push(response.errors[code]);
+            }
+            showError(errors.toString());
+
+        },
+        complete: function(response) {
+
+
+        }
     });
-    $.each(response.paymentMethods.CREDIT_CARD.options, function(index,option){
-
-        $("#tab-credito .contents").append(tplCredit({
-            name:option.name,
-            image:option.images.MEDIUM.path,
-
-        }));
+    $("#installments_field").on("change", function(){
+        var installment = $(this).find("option:selected").data("installment");
+        console.log(installment);
+        $("[name=installments_qtd]").val(installment.quantity);
+        $("[name=installments_value]").val(installment.installmentAmount);
+        $("[name=installments_total]").val(installment.totalAmount);
     });
-    $("#loading").hide();
-    $("#tabs-methods .nav-link:first").tab("show"); // preselectionner la fenetre boleto
-    $("#payment-methods").removeClass("hide");
-    },
-    error: function(response) {
+    $("#number_field").on("change", function(){
+        var value  = $(this).val();
+        if (value.length >= 6) {
+            PagSeguroDirectPayment.getBrand({
+                cardBin: value.substring(0, 6),
+                success: function(response) {
 
-      var errors = [];
-      for(var code in response.errors)
-      {
-        errors.push(response.errors[code]);
-      }
-      showError(errors.toString());
+                    $("#brand_field").val(response.brand.name);
 
-    //  console.log(response);
+                    PagSeguroDirectPayment.getInstallments({
+                        amount: parseFloat("{$order.vltotal}"),
+                        brand: response.brand.name,
+                        maxInstallmentNoInterest: parseInt("{$pagseguro.maxInstallmentNoInterest}"),
+                        success: function(response) {
 
-    },
-    complete: function(response) {
-    //  console.log(respons
+                            $("#installments_field").html('<option disabled="disabled"></option>');
 
+                            var tplInstallmentFree = Handlebars.compile($("#tpl-installment-free").html());
+                            var tplInstallment = Handlebars.compile($("#tpl-installment").html());
+                            var formatReal = {
+                                minimumFractionDigits:2,
+                                style:"currency",
+                                currency:"BRL"
+                            };
+                            $.each(response.installments[$("#brand_field").val()], function(index, installment){
+                                if (parseInt("{$pagseguro.maxInstallment}") > index) {
+                                    if (installment.interestFree === true) {
+                                        var $option = $(tplInstallmentFree({
+                                            quantity:installment.quantity,
+                                            installmentAmount:installment.installmentAmount.toLocaleString('pt-BR', formatReal)
+                                        }));
+                                    } else {
+                                        var $option = $(tplInstallment({
+                                            quantity:installment.quantity,
+                                            installmentAmount:installment.installmentAmount.toLocaleString('pt-BR', formatReal),
+                                            totalAmount:installment.totalAmount.toLocaleString('pt-BR', formatReal)
+                                        }));
+                                    }
+                                    $option.data("installment", installment);
+                                    $("#installments_field").append($option);
+                                }
+                            });
+                        },
+                        error: function(response) {
+
+                            var errors = [];
+                            for (var code in response.errors)
+                            {
+                                errors.push(response.errors[code]);
+                            }
+                            showError(errors.toString());
+                        },
+                        complete: function(response) {
+                            //tratamento comum para todas chamadas
+                        }
+                    });
+                },
+                error: function(response) {
+
+                    var errors = [];
+                    for (var code in response.errors)
+                    {
+                        errors.push(response.errors[code]);
+                    }
+                    showError(errors.toString());
+                },
+                complete: function(response) {
+                    //tratamento comum para todas chamadas
+                }
+            });
+        }
+    });
+    function isValidCPF(number) {
+        var sum;
+        var rest;
+        sum = 0;
+        if (number == "00000000000") return false;
+        for (i=1; i<=9; i++) sum = sum + parseInt(number.substring(i-1, i)) * (11 - i);
+        rest = (sum * 10) % 11;
+        if ((rest == 10) || (rest == 11))  rest = 0;
+        if (rest != parseInt(number.substring(9, 10)) ) return false;
+        sum = 0;
+        for (i = 1; i <= 10; i++) sum = sum + parseInt(number.substring(i-1, i)) * (12 - i);
+        rest = (sum * 10) % 11;
+        if ((rest == 10) || (rest == 11))  rest = 0;
+        if (rest != parseInt(number.substring(10, 11) ) ) return false;
+        return true;
     }
-  });
-  $("#number_field").on("change", function(){
+    $("#form-debit").on("submit", function(e){
+        e.preventDefault();
+        if (!isValidCPF($("#form-debit [name=cpf]").val())) {
+            showError("Este número de CPF não é válido.");
+            return false;
+        }
+        var formData = $(this).serializeArray();
+        var params = {};
+        $.each(formData, function(index, field){
+            params[field.name] = field.value;
+        });
+        params.hash = PagSeguroDirectPayment.getSenderHash();
+        $.post(
+            "/payment/debit",
+            $.param(params),
+            function(r){
+                var response = JSON.parse(r);
+                if (response.success) {
+                    window.location.href = "/payment/success/debit";
+                } else {
+                    showError("Não possível efetuar o pagamento.");
+                }
+            }
+        );
+    });
+    $("#form-boleto").on("submit", function(e){
+        e.preventDefault();
+        if (!isValidCPF($("#form-boleto [name=cpf]").val())) {
+            showError("Este número de CPF não é válido.");
+            return false;
+        }
+        var formData = $(this).serializeArray();
+        var params = {};
+        $.each(formData, function(index, field){
+            params[field.name] = field.value;
+        });
+        params.hash = PagSeguroDirectPayment.getSenderHash();
+        $.post(
+            "/payment/boleto",
+            $.param(params),
+            function(r){
+                var response = JSON.parse(r);
+                if (response.success) {
+                    window.location.href = "/payment/success/boleto";
+                } else {
+                    showError("Não possível efetuar o pagamento.");
+                }
+            }
+        );
+    });
+    $("#form-credit").on("submit", function(e){
+        e.preventDefault();
+        if (!isValidCPF($("#form-credit [name=cpf]").val())) {
+            showError("Este número de CPF não é válido.");
+            return false;
+        }
+        $("#form-credit [type=submit]").attr("disabled", "disabled");
+        var formData = $(this).serializeArray();
+        var params = {};
+        $.each(formData, function(index, field){
+            params[field.name] = field.value;
+        });
+        PagSeguroDirectPayment.createCardToken({
+            cardNumber: params.number,
+            cvv: params.cvv,
+            expirationMonth: params.month,
+            expirationYear: params.year,
+            success: function(response) {
 
-    var value = $(this).val();
-    if (value.length >= 6) {
-      PagSeguroDirectPayment.getBrand({
-    	  cardBin: value.substring(0,6),
-    		success: function(response) {
-    			//bandeira encontrada
-          $("$brand_field").val(response.brand.name);
-          //console.log(response.brand.name);
-    		},
-    		error: function(response) {
-          var errors = [];
-          for(var code in response.errors)
-          {
-            errors.push(response.errors[code]);
-          }
-          showError(errors.toString());
+                params.token = response.card.token;
+                params.hash = PagSeguroDirectPayment.getSenderHash();
+                $.post(
+                    "/payment/credit",
+                    $.param(params),
+                    function(r){
+                        var response = JSON.parse(r);
+                        if (response.success) {
+                            window.location.href = "/payment/success";
+                        } else {
+                            showError("Não possível efetuar o pagamento.");
+                        }
+                    }
+                );
+            },
+            error: function(response) {
+                var errors = [];
+                for (var code in response.errors)
+                {
+                    errors.push(response.errors[code]);
+                }
+                showError(errors.toString());
+            },
+            complete: function(response) {
 
-    			//tratamento do erro
-    		},
-    		complete: function(response) {
-    			//tratamento comum para todas chamadas
-    		}
+                $("#form-credit [type=submit]").removeAttr("disabled");
+            }
+        });
+    });
 });
-    }
-  });
-
-
-  });
-
 </script>
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.

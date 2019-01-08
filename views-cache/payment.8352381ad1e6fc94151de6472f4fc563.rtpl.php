@@ -16,10 +16,13 @@
 								<div class="col-md-12">
 
 									<?php if( $msgError != '' ){ ?>
+
 									<div class="alert alert-danger">
 										<?php echo htmlspecialchars( $msgError, ENT_COMPAT, 'UTF-8', FALSE ); ?>
+
 									</div>
                                     <?php } ?>
+
 
                                     <div id="alert-error" class="alert alert-danger hide">
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -129,6 +132,8 @@
 
                                                     <form action="/payment/credit" class="checkout" method="post" name="checkout" style="padding:10px;" id="form-credit">
 
+                                                        <input type="hidden" name="brand" value="brand_field">
+
                                                         <div class="row">
                                                             <div class="col-sm-4">
                                                                 <div class="form-row form-row-wide address-field validate-required">
@@ -199,8 +204,10 @@
                                                                     <select name="year" class="input-text" required="required">
                                                                         <option disabled="disabled" selected="selected" value="">Ano</option>
                                                                         <?php $counter1=-1;  if( isset($years) && ( is_array($years) || $years instanceof Traversable ) && sizeof($years) ) foreach( $years as $key1 => $value1 ){ $counter1++; ?>
+
                                                                         <option value="<?php echo htmlspecialchars( $value1, ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1, ENT_COMPAT, 'UTF-8', FALSE ); ?></option>
                                                                         <?php } ?>
+
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -284,7 +291,7 @@
     amount: parseFloat("<?php echo htmlspecialchars( $order["vltotal"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"),
     success: function(response) {
       //meios de pagamento disponíveis
-    //  console.log(response);
+     console.log(response);
     var tplDebit = Handlebars.compile($("#tpl-payment-debit").html());
     var tplCredit = Handlebars.compile($("#tpl-payment-credit").html());
 
@@ -325,6 +332,35 @@
 
     }
   });
+  $("#number_field").on("change", function(){
+
+    var value = $(this).val();
+    if (value.length >= 6) {
+      PagSeguroDirectPayment.getBrand({
+    	  cardBin: value.substring(0,6),
+    		success: function(response) {
+    			//bandeira encontrada
+        //  $("$brand_field").val(response.brand.name);
+          console.log(response);
+    		},
+    		error: function(response) {
+          var errors = [];
+          for(var code in response.errors)
+          {
+            errors.push(response.errors[code]);
+          }
+          showError(errors.toString());
+
+    			//tratamento do erro
+    		},
+    		complete: function(response) {
+    			//tratamento comum para todas chamadas
+    		}
+});
+    }
+  });
+
+
   });
 
 </script>

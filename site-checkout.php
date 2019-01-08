@@ -124,7 +124,7 @@ $app->post("/checkout", function(){
 	]);
 
 	$order->save();
-	
+
 	$order->toSession();
 
 	header("Location: /payment");
@@ -214,11 +214,11 @@ $app->get("/boleto/:idorder", function($idorder){
 	$dadosboleto["cedente"] = "HCODE TREINAMENTOS LTDA - ME";
 
 	// NÃO ALTERAR!
-	require_once("funcoes_itau.php");
-	require_once("layout_itau.php");
-	//$path = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "res" . DIRECTORY_SEPARATOR . "boletophp" . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR;
+	//require_once("funcoes_itau.php");
+	//require_once("layout_itau.php");
+	$path = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "res" . DIRECTORY_SEPARATOR . "boletophp" . DIRECTORY_SEPARATOR . "include" . DIRECTORY_SEPARATOR;
 
-	//require_once($path . "funcoes_itau.php");
-	//require_once($path . "layout_itau.php");
+	require_once($path . "funcoes_itau.php");
+	require_once($path . "layout_itau.php");
 
 });
